@@ -2,7 +2,7 @@
 //  Fit4LifeApp.swift
 //  Fit4Life
 //
-//  Created by Todd Weiler on 10/15/24.
+//  Created by Styles Weiler on 10/15/24.
 //
 
 import SwiftUI
@@ -11,7 +11,10 @@ import SwiftUI
 struct Fit4LifeApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationView {
+                WelcomeView()
+            }
         }
     }
 }
+

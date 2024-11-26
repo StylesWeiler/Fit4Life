@@ -10,9 +10,39 @@
 		3914B50E2CBF7304002F8ECC /* Fit4Life.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Fit4Life.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		3914B5292CBF7417002F8ECC /* Exceptions for "Fit4Life" folder in "Fit4Life" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Views/CommunityView.swift,
+				Views/GoalDetailView.swift,
+				Views/GoalsOverviewView.swift,
+				Views/LineChartView.swift,
+			);
+			target = 3914B50D2CBF7304002F8ECC /* Fit4Life */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		3914B52A2CBF7417002F8ECC /* Exceptions for "Fit4Life" folder in "Copy Bundle Resources" phase from "Fit4Life" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 3914B50C2CBF7304002F8ECC /* Resources */;
+			membershipExceptions = (
+				Views/CommunityView.swift,
+				Views/GoalDetailView.swift,
+				Views/GoalsOverviewView.swift,
+				Views/LineChartView.swift,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3914B5102CBF7304002F8ECC /* Fit4Life */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				3914B5292CBF7417002F8ECC /* Exceptions for "Fit4Life" folder in "Fit4Life" target */,
+				3914B52A2CBF7417002F8ECC /* Exceptions for "Fit4Life" folder in "Copy Bundle Resources" phase from "Fit4Life" target */,
+			);
 			path = Fit4Life;
 			sourceTree = "<group>";
 		};
