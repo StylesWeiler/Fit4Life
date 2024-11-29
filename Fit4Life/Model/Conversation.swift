@@ -5,12 +5,15 @@
 //  Created by Styles Weiler on 10/16/24.
 //
 
-import SwiftUI
-import Foundation
+import SwiftData
 
-struct Conversation: Identifiable {
-    let id = UUID()
-    let title: String
-    let subtext: String
+@Model
+final class Conversation {
+    var title: String
+    var subtext: String
     
+    init(title: String, subtext: String) {
+        self.title = title
+        self.subtext = subtext
+    }
 }

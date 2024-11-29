@@ -6,14 +6,17 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct AddGoalView: View {
     @Environment(\.dismiss) var dismiss
-    @ObservedObject var viewModel: GoalViewModel
+    @Environment(\.modelContext) private var modelContext
     
     @State private var title = ""
     @State private var emoji = ""
     @State private var goalDetail = ""
+    @State private var goalAmountString = ""
+    @State private var showingInvalidInputError = false
     
     // Common emojis for fitness goals
     let commonEmojis = ["🏃‍♂️", "💪", "🏋️‍♂️", "🚴‍♂️", "🧘‍♂️", "💧", "🥗", "⚡️", "❤️", "🎯"]
@@ -25,11 +28,22 @@ struct AddGoalView: View {
                     TextField("Goal Title", text: $title)
                     
                     TextField("Goal Details", text: $goalDetail)
+                    
+                    TextField("Daily Goal Amount", text: $goalAmountString)
+                        .keyboardType(.decimalPad)
+                        .onChange(of: goalAmountString) { _, newValue in
+                            showingInvalidInputError = Double(newValue) == nil && !newValue.isEmpty
+                        }
+                    
+                    if showingInvalidInputError {
+                        Text("Please enter a valid number.")
+                            .foregroundColor(.red)
+                    }
                 }
                 
                 Section(header: Text("Choose an Emoji")) {
                     LazyVGrid(columns: [
-                        GridItem(.adaptive(minimum: 30))
+                        GridItem(.adaptive(minimum: 50))
                     ], spacing: 10) {
                         ForEach(commonEmojis, id: \.self) { emoji in
                             Text(emoji)
@@ -51,13 +65,22 @@ struct AddGoalView: View {
                     dismiss()
                 },
                 trailing: Button("Save") {
-                    if !title.isEmpty && !emoji.isEmpty {
-                        viewModel.addGoal(title: title, emoji: emoji, goalDetail: goalDetail)
-                        dismiss()
-                    }
+                    saveGoal()
                 }
-                .disabled(title.isEmpty || emoji.isEmpty)
+                .disabled(title.isEmpty || emoji.isEmpty || showingInvalidInputError)
             )
         }
+    }
+    
+    private func saveGoal() {
+        let goal = Goal(
+            title: title,
+            emoji: emoji,
+            goalDetail: goalDetail,
+            progress: 0.0
+        )
+        
+        modelContext.insert(goal)
+        dismiss()
     }
 }

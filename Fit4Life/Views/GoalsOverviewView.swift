@@ -6,22 +6,17 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct GoalsOverviewView: View {
-    @StateObject private var viewModel = GoalViewModel()
+    @Environment(\.modelContext) private var modelContext
+    @Query private var goals: [Goal]
     @State private var showingAddGoal = false
     
-    let goals = [
-        Goal(title: "Water", emoji: "💧", goalDetail: "1 gal/day", progress: 0.5),
-        Goal(title: "Exercise", emoji: "🏋️‍♂️", goalDetail: "30 mins/day", progress: 0.3),
-        Goal(title: "Sunlight", emoji: "☀️", goalDetail: "20 mins/day", progress: 0.8)
-    ]
-    
-
     var body: some View {
         VStack {
-            ScrollView {
-                ForEach(viewModel.goals) { goal in
+            List {
+                ForEach(goals) { goal in
                     NavigationLink(destination: GoalDetailView(goal: goal)) {
                         VStack(alignment: .leading) {
                             Text("\(goal.emoji) \(goal.title)")
@@ -34,14 +29,20 @@ struct GoalsOverviewView: View {
                                     .frame(width: 50, height: 50)
                             }
                         }
-                        .padding()
-                        .background(RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.gray, lineWidth: 1))
-                        .padding(.horizontal)
+                    }
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button(role: .destructive) {
+                            modelContext.delete(goal)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
                     }
                 }
             }
+            .listStyle(PlainListStyle())  // This removes the default list styling
+            
             Spacer()
+            
             Button(action: {
                 showingAddGoal = true
             }) {
@@ -55,16 +56,17 @@ struct GoalsOverviewView: View {
             .padding()
         }
         .sheet(isPresented: $showingAddGoal) {
-            AddGoalView(viewModel: viewModel)
+            AddGoalView()
         }
+        .background(Color("BackgroundColor"))
     }
 }
 
-struct GoalsOverviewView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            GoalsOverviewView()
-        }
-    }
-}
+//struct GoalsOverviewView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        NavigationView {
+//            GoalsOverviewView()
+//        }
+//    }
+//}
 

@@ -6,10 +6,13 @@
 //
 
 import SwiftUI
+import SwiftData
 
 
 // Community View
 struct CommunityView: View {
+    // @Query private var conversations: [Conversation]
+    
     let conversations = [
         Conversation(title: "Runners GC", subtext: "10 new messages"),
         Conversation(title: "Accountability Partner", subtext: "Gym Bro: Skipping leg day again I see..."),
@@ -27,7 +30,7 @@ struct CommunityView: View {
     
     var body: some View {
         ZStack {
-            Color("BackgroundColor")
+            Color(.teal.opacity(0.2))
                 .ignoresSafeArea(edges: .all)
             VStack {
                 HStack {
@@ -38,20 +41,19 @@ struct CommunityView: View {
                         .foregroundColor(Color("ButtonColor")) // Title text color
                         .padding(.leading)
                     
-                    Spacer() // Push the button to the right
+                    Spacer()
                     
-                    // Add button at the top-right
                     Button(action: {
                         // Create new group functionality
                     }) {
                         Image(systemName: "plus.circle.fill")
                             .resizable()
                             .frame(width: 40, height: 40)
-                            .foregroundColor(.purple) // Deep purple color
+                            .foregroundColor(.purple)
                     }
                     .padding(.trailing)
                 }
-                .padding(.top, 20) // Space between top edge and title + button
+                .padding(.top, 20)
                 
                 ScrollView {
                     ForEach(conversations) { conversation in
@@ -62,16 +64,15 @@ struct CommunityView: View {
                                     .foregroundColor(.black) // White text for dark mode
                                 Text(conversation.subtext)
                                     .font(.subheadline)
-                                    .foregroundColor(.gray) // Secondary text lighter
+                                    .foregroundColor(.gray)
                             }
+                            
                             Spacer()
                         }
                         .padding()
                         .background(RoundedRectangle(cornerRadius: 10)
                             .fill(Color.teal.opacity(0.2))
                         )
-//                        .overlay(RoundedRectangle(cornerRadius: 10)
-//                            .stroke(Color("AccentColor"), lineWidth: 1)) // Optional border
                         .padding(.horizontal)
                     }
                 }
@@ -80,8 +81,6 @@ struct CommunityView: View {
             }
         }
     }
-
-
 }
 
 // Line Chart View (Placeholder)
@@ -91,7 +90,7 @@ struct LineChartView: View {
     
     var body: some View {
         ZStack{
-            Color("BackgroundColor")
+            Color(.teal.opacity(0.2))
                 .ignoresSafeArea(edges: .all)
             // Placeholder for the actual chart
             Image("LineGraph")
@@ -112,13 +111,13 @@ struct GoalDetailView: View {
     
     var body: some View {
         ZStack {
-            Color("BackgroundColor")
+            Color(.teal.opacity(0.2))
                 .ignoresSafeArea(edges: .all)
             
             VStack {
                 Text("\(goal.title) \(goal.emoji)")
                     .font(.largeTitle)
-                    .foregroundColor(.indigo) // Deep indigo highlight
+                    .foregroundColor(.indigo)
                     .padding()
                 
                 // Daily effort and button
@@ -149,15 +148,6 @@ struct GoalDetailView: View {
                 // Line chart view
                 LineChartView(goal: goal, timeRange: selectedTimeRange)
                     .frame(height: 200)
-                
-                Spacer()
-                
-                // Navigation to CommunityView
-                NavigationLink(destination: CommunityView()) {
-                    Text("Go to Community")
-                        .customButtonStyle()
-                }
-                .padding()
             }
         }
     }
@@ -165,54 +155,149 @@ struct GoalDetailView: View {
 
 // Goals Overview View
 struct GoalsOverviewView: View {
-    @StateObject private var viewModel = GoalViewModel()
+    @Environment(\.modelContext) private var modelContext
+    @Query private var goals: [Goal]
     @State private var showingAddGoal = false
+    @State private var selectedGoal: Goal?
+    @State private var isEditing = false
     
-    let goals = [
-        Goal(title: "Water", emoji: "💧", goalDetail: "1 gal/day", progress: 0.5),
-        Goal(title: "Exercise", emoji: "🏋️‍♂️", goalDetail: "30 mins/day", progress: 0.3),
-        Goal(title: "Sunlight", emoji: "☀️", goalDetail: "20 mins/day", progress: 0.8)
-    ]
-    
-
     var body: some View {
-        VStack {
-            ScrollView {
-                ForEach(viewModel.goals) { goal in
-                    NavigationLink(destination: GoalDetailView(goal: goal)) {
-                        VStack(alignment: .leading) {
-                            Text("\(goal.emoji) \(goal.title)")
-                                .font(.headline)
-                            HStack {
-                                Text(goal.goalDetail)
-                                Spacer()
-                                ProgressView(value: goal.progress)
-                                    .progressViewStyle(CircularProgressViewStyle())
-                                    .frame(width: 50, height: 50)
+        NavigationView {
+            ZStack {
+                Color(.teal.opacity(0.2))
+                    .ignoresSafeArea()
+                
+                VStack {
+                    HStack {
+                        Text("Goals")
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .foregroundColor(Color("ButtonColor"))
+                            .padding(.leading)
+                        
+                        Spacer()
+                        
+                        Button(action: {
+                            showingAddGoal = true
+                        }) {
+                            Image(systemName: "plus.circle.fill")
+                                .resizable()
+                                .frame(width: 40, height: 40)
+                                .foregroundColor(.purple)
+                        }
+                        .padding(.trailing)
+                    }
+                    .padding(.top, 20)
+                    
+                    List {
+                        ForEach(goals) { goal in
+                            NavigationLink(destination: GoalDetailView(goal: goal)) {
+                                HStack {
+                                    VStack(alignment: .leading) {
+                                        Text("\(goal.title) \(goal.emoji)")
+                                            .font(.headline)
+                                            .foregroundColor(.black)
+                                        Text(goal.goalDetail)
+                                            .font(.subheadline)
+                                            .foregroundColor(.gray)
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    ProgressView(value: goal.progress)
+                                        .progressViewStyle(CircularProgressViewStyle())
+                                        .frame(width: 50, height: 50)
+                                }
+                            }
+                            .listRowBackground(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(.teal.opacity(0.2))
+                            )
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    modelContext.delete(goal)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                                
+                                Button {
+                                    selectedGoal = goal
+                                    isEditing = true
+                                } label: {
+                                    Label("Edit", systemImage: "pencil")
+                                }
+                                .tint(.blue)
                             }
                         }
-                        .padding()
-                        .background(RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.gray, lineWidth: 1))
-                        .padding(.horizontal)
                     }
+                    .listStyle(PlainListStyle())
+                    
+                    NavigationLink(destination: CommunityView()) {
+                        Text("Go to Community")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .background(Color("ButtonColor"))
+                            .cornerRadius(10)
+                            .customButtonStyle()
+                    }
+                    .padding(.bottom)
                 }
             }
-            Spacer()
-            Button(action: {
-                showingAddGoal = true
-            }) {
-                Text("Add New Goal")
-                    .font(.headline)
-                    .padding()
-                    .background(Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
+            .sheet(isPresented: $showingAddGoal) {
+                AddGoalView()
             }
-            .padding()
+            .sheet(isPresented: $isEditing) {
+                if let goalToEdit = selectedGoal {
+                    EditGoalView(goal: goalToEdit)
+                }
+            }
         }
-        .sheet(isPresented: $showingAddGoal) {
-            AddGoalView(viewModel: viewModel)
+    }
+}
+
+struct EditGoalView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
+    var goal: Goal
+    
+    @State private var title: String
+    @State private var emoji: String
+    @State private var goalDetail: String
+    @State private var progress: Double
+    
+    init(goal: Goal) {
+        self.goal = goal
+        _title = State(initialValue: goal.title)
+        _emoji = State(initialValue: goal.emoji)
+        _goalDetail = State(initialValue: goal.goalDetail)
+        _progress = State(initialValue: goal.progress)
+    }
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("Goal Details")) {
+                    TextField("Title", text: $title)
+                    TextField("Emoji", text: $emoji)
+                    TextField("Goal Detail", text: $goalDetail)
+                    Slider(value: $progress, in: 0...1, step: 0.1) // need to improve
+                }
+            }
+            .navigationTitle("Edit Goal")
+            .navigationBarItems(
+                leading: Button("Cancel") {
+                    dismiss()
+                },
+                trailing: Button("Save") {
+                    goal.title = title
+                    goal.emoji = emoji
+                    goal.goalDetail = goalDetail
+                    goal.progress = progress
+                    
+                    try? modelContext.save()
+                    dismiss()
+                }
+            )
         }
     }
 }
@@ -222,7 +307,7 @@ struct WelcomeView: View {
     
     var body: some View {
         ZStack{
-            Color("BackgroundColor")
+            Color(.teal.opacity(0.075))
                 .ignoresSafeArea(edges: .all)
             VStack {
                 Image("Fit4Life")
@@ -230,6 +315,7 @@ struct WelcomeView: View {
                     .frame(width: 500, height: 500)
                 NavigationLink {
                     GoalsOverviewView()
+                        .modelContainer(for: Goal.self)
                 } label: {
                     Text("Continue")
                         .customButtonStyle()
@@ -239,6 +325,7 @@ struct WelcomeView: View {
         }
     }
 }
+
 
 
 #Preview {

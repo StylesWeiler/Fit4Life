@@ -58,6 +58,7 @@ struct GoalDetailView: View {
                     .background(Color.purple)
                     .foregroundColor(.white)
                     .cornerRadius(10)
+                    .customButtonStyle()
             }
             .padding()
         }
