@@ -14,7 +14,7 @@ struct CustomButtonModifier: ViewModifier {
             .font(.headline)
                     .padding(.vertical, 16)
                     .padding(.horizontal, 16)
-            .background(Color("ButtonColor"))
+                    .background(.indigo)
             .foregroundColor(.white)
             .cornerRadius(100)
             .frame(height: 60)

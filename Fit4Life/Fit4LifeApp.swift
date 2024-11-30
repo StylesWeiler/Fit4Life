@@ -8,6 +8,13 @@
 import SwiftUI
 import SwiftData
 
+extension View {
+    func commonBackground() -> some View {
+        self.background(Color("BackgroundColor")
+            .ignoresSafeArea(edges: .all))
+    }
+}
+
 @main
 struct Fit4LifeApp: App {
     let container: ModelContainer
@@ -26,6 +33,7 @@ struct Fit4LifeApp: App {
                 WelcomeView()
             }
             .modelContainer(container)
+            .commonBackground()
         }
     }
 }

@@ -38,7 +38,7 @@ struct CommunityView: View {
                     Text("Community")
                         .font(.title)
                         .fontWeight(.bold)
-                        .foregroundColor(Color("ButtonColor")) // Title text color
+                        .foregroundColor(Color(.indigo)) // Title text color
                         .padding(.leading)
                     
                     Spacer()
@@ -49,7 +49,7 @@ struct CommunityView: View {
                         Image(systemName: "plus.circle.fill")
                             .resizable()
                             .frame(width: 40, height: 40)
-                            .foregroundColor(.purple)
+                            .foregroundColor(.indigo)
                     }
                     .padding(.trailing)
                 }
@@ -103,11 +103,97 @@ struct LineChartView: View {
 }
 
 // Goal Detail View
-struct GoalDetailView: View {
+struct GoalHeaderView: View {
     var goal: Goal
-    @State private var selectedTimeRange = "Daily"
-    @State private var dailyEffort = 50
-    let timeRanges = ["Daily", "Weekly", "Monthly", "Yearly"]
+    var onEdit: () -> Void
+    var onDelete: () -> Void
+    
+    var body: some View {
+        HStack {
+            Text("\(goal.title) \(goal.emoji)")
+                .font(.largeTitle)
+                .foregroundColor(.indigo)
+            
+            Spacer()
+            
+            Button(action: onEdit) {
+                Image(systemName: "pencil.circle.fill")
+                    .foregroundColor(.indigo)
+                    .font(.title)
+            }
+            
+            Button(action: onDelete) {
+                Image(systemName: "trash.circle.fill")
+                    .foregroundColor(.indigo)
+                    .font(.title)
+            }
+        }
+        .padding()
+    }
+}
+
+
+
+struct ProgressCircleView: View {
+    var progress: Double
+    
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(Color.gray.opacity(0.3), lineWidth: 10)
+            Circle()
+                .trim(from: 0, to: progress)
+                .stroke(.indigo, style: StrokeStyle(lineWidth: 10, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+            Text("\(progress * 100, specifier: "%.0f")%")
+                .font(.title)
+        }
+        .frame(width: 200, height: 200)
+        .padding()
+    }
+}
+
+struct ProgressEntryView: View {
+    var entry: ProgressEntry
+    
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text("\(entry.amount, specifier: "%.1f")")
+                    .font(.headline)
+                if !entry.note.isEmpty {
+                    Text(entry.note)
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                }
+            }
+            Spacer()
+            Text(entry.date, style: .time)
+                .font(.caption)
+                .foregroundColor(.gray)
+        }
+        .padding()
+        .background(RoundedRectangle(cornerRadius: 10)
+            .fill(Color.teal.opacity(0.2)))
+        .padding(.horizontal)
+    }
+}
+
+struct GoalDetailView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
+    
+    @State private var progressAmount = ""
+    @State private var progressNote = ""
+    @State private var showingAddProgress = false
+    @State private var showingEditSheet = false
+    
+    var goal: Goal
+    
+    var progressPercentage: Double {
+        guard goal.dailyTarget > 0 else { return 0 }
+        return min(goal.progress / goal.dailyTarget, 1.0)
+    }
     
     var body: some View {
         ZStack {
@@ -115,45 +201,103 @@ struct GoalDetailView: View {
                 .ignoresSafeArea(edges: .all)
             
             VStack {
-                Text("\(goal.title) \(goal.emoji)")
-                    .font(.largeTitle)
-                    .foregroundColor(.indigo)
-                    .padding()
+                GoalHeaderView(
+                    goal: goal,
+                    onEdit: { showingEditSheet = true },
+                    onDelete: {
+                        modelContext.delete(goal)
+                        dismiss()
+                    }
+                )
                 
-                // Daily effort and button
-                HStack {
-                    Text("Today's effort: \(dailyEffort)%")
-                        .foregroundColor(.primary) // White text for dark mode
-                    Spacer()
-                    Button(action: {
-                        if dailyEffort < 100 {
-                            dailyEffort += 10
+                Text("Daily Target: \(goal.dailyTarget, specifier: "%.1f")")
+                    .font(.headline)
+                
+                ProgressCircleView(progress: progressPercentage)
+                    .padding(.bottom, 30)
+                
+//                Text("Entries")
+//                    .font(.title2)
+//                    .fontWeight(.bold)
+//                    .foregroundColor(.indigo)
+//                    .frame(maxWidth: .infinity, alignment: .leading)
+//                    .padding(.horizontal)
+                
+                
+                ScrollView {
+                    LazyVStack(spacing: 10) {
+                        ForEach(goal.entries) { entry in
+                            ProgressEntryView(entry: entry)
                         }
-                    }) {
-                        Text("Add Effort")
-                            .customButtonStyle()
                     }
                 }
-                .padding()
                 
-                // Time range selection
-                Picker("Time Range", selection: $selectedTimeRange) {
-                    ForEach(timeRanges, id: \.self) {
-                        Text($0)
-                    }
+                Spacer()
+                
+                Button("Add Progress") {
+                    showingAddProgress = true
                 }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding()
-                
-                // Line chart view
-                LineChartView(goal: goal, timeRange: selectedTimeRange)
-                    .frame(height: 200)
+                .customButtonStyle()
+                .padding(.bottom)
+            }
+            .sheet(isPresented: $showingAddProgress) {
+                NavigationView {
+                    Form {
+                        TextField("Amount", text: $progressAmount)
+                            .keyboardType(.decimalPad)
+                        TextField("Note (optional)", text: $progressNote)
+                    }
+                    .navigationTitle("Add Progress")
+                    .navigationBarItems(
+                        leading: Button("Cancel") { showingAddProgress = false },
+                        trailing: Button("Save") {
+                            if let amount = Double(progressAmount) {
+                                addProgress(amount: amount)
+                            }
+                        }
+                    )
+                }
+            }
+            .sheet(isPresented: $showingEditSheet) {
+                EditGoalView(goal: goal)
             }
         }
     }
+    
+    private func addProgress(amount: Double) {
+        let entry = ProgressEntry(amount: amount, note: progressNote)
+        goal.entries.insert(entry, at: 0)
+        goal.progress = amount
+        showingAddProgress = false
+        progressAmount = ""
+        progressNote = ""
+        try? modelContext.save()
+    }
 }
 
-// Goals Overview View
+struct SmallProgressCircleView: View {
+    var goal: Goal
+    
+    var progressPercentage: Double {
+        guard goal.dailyTarget > 0 else { return 0 }
+        return min(goal.progress / goal.dailyTarget, 1.0)
+    }
+    
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(.gray.opacity(0.3), lineWidth: 5)
+            Circle()
+                .trim(from: 0, to: progressPercentage)
+                .stroke(.indigo, style: StrokeStyle(lineWidth: 5, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+            Text("\(progressPercentage * 100, specifier: "%.0f")%")
+                .font(.caption)
+        }
+        .frame(width: 40, height: 40)
+    }
+}
+
 struct GoalsOverviewView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var goals: [Goal]
@@ -162,94 +306,82 @@ struct GoalsOverviewView: View {
     @State private var isEditing = false
     
     var body: some View {
-        NavigationView {
-            ZStack {
-                Color(.teal.opacity(0.2))
-                    .ignoresSafeArea()
+        ZStack {
+            Color(.teal.opacity(0.2))
+                .ignoresSafeArea(edges: .all)
+            
+            VStack {
+                HStack {
+                    Text("Goals")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .foregroundColor(.indigo)
+                        .padding(.leading)
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        showingAddGoal = true
+                    }) {
+                        Image(systemName: "plus.circle.fill")
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                            .foregroundColor(.indigo)
+                    }
+                    .padding(.trailing)
+                }
+                .padding(.top, 20)
                 
-                VStack {
-                    HStack {
-                        Text("Goals")
-                            .font(.title)
-                            .fontWeight(.bold)
-                            .foregroundColor(Color("ButtonColor"))
-                            .padding(.leading)
-                        
-                        Spacer()
-                        
-                        Button(action: {
-                            showingAddGoal = true
-                        }) {
-                            Image(systemName: "plus.circle.fill")
-                                .resizable()
-                                .frame(width: 40, height: 40)
-                                .foregroundColor(.purple)
-                        }
-                        .padding(.trailing)
-                    }
-                    .padding(.top, 20)
-                    
-                    List {
-                        ForEach(goals) { goal in
-                            NavigationLink(destination: GoalDetailView(goal: goal)) {
-                                HStack {
-                                    VStack(alignment: .leading) {
-                                        Text("\(goal.title) \(goal.emoji)")
-                                            .font(.headline)
-                                            .foregroundColor(.black)
-                                        Text(goal.goalDetail)
-                                            .font(.subheadline)
-                                            .foregroundColor(.gray)
-                                    }
-                                    
-                                    Spacer()
-                                    
-                                    ProgressView(value: goal.progress)
-                                        .progressViewStyle(CircularProgressViewStyle())
-                                        .frame(width: 50, height: 50)
+                ScrollView {
+                    ForEach(goals) { goal in
+                        NavigationLink(destination: GoalDetailView(goal: goal)) {
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text("\(goal.title) \(goal.emoji)")
+                                        .font(.headline)
+                                    Text(goal.goalDetail)
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
                                 }
+                                Spacer()
+                                SmallProgressCircleView(goal: goal)
                             }
-                            .listRowBackground(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(.teal.opacity(0.2))
-                            )
-                            .swipeActions(edge: .trailing) {
-                                Button(role: .destructive) {
-                                    modelContext.delete(goal)
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
-                                
-                                Button {
-                                    selectedGoal = goal
-                                    isEditing = true
-                                } label: {
-                                    Label("Edit", systemImage: "pencil")
-                                }
-                                .tint(.blue)
+                            .padding()
+                            .background(RoundedRectangle(cornerRadius: 10)
+                                .fill(Color.teal.opacity(0.2)))
+                            .padding(.horizontal)
+                        }
+                        .swipeActions(edge: .trailing) {
+                            Button {
+                                selectedGoal = goal
+                                isEditing = true
+                            } label: {
+                                Label("Edit", systemImage: "pencil")
+                            }
+                            .tint(.blue)
+                            
+                            Button(role: .destructive) {
+                                modelContext.delete(goal)
+                            } label: {
+                                Label("Delete", systemImage: "trash")
                             }
                         }
                     }
-                    .listStyle(PlainListStyle())
-                    
-                    NavigationLink(destination: CommunityView()) {
-                        Text("Go to Community")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .background(Color("ButtonColor"))
-                            .cornerRadius(10)
-                            .customButtonStyle()
-                    }
-                    .padding(.bottom)
                 }
-            }
-            .sheet(isPresented: $showingAddGoal) {
-                AddGoalView()
-            }
-            .sheet(isPresented: $isEditing) {
-                if let goalToEdit = selectedGoal {
-                    EditGoalView(goal: goalToEdit)
+                
+                NavigationLink(destination: CommunityView()) {
+                    Text("Go to Community")
+                        .customButtonStyle()
                 }
+                .padding()
+            }
+        }
+        .sheet(isPresented: $showingAddGoal) {
+            AddGoalView()
+        }
+        .sheet(isPresented: $isEditing) {
+            if let goalToEdit = selectedGoal {
+                EditGoalView(goal: goalToEdit)
             }
         }
     }
@@ -264,6 +396,7 @@ struct EditGoalView: View {
     @State private var emoji: String
     @State private var goalDetail: String
     @State private var progress: Double
+    @State private var dailyTargetString: String
     
     init(goal: Goal) {
         self.goal = goal
@@ -271,6 +404,7 @@ struct EditGoalView: View {
         _emoji = State(initialValue: goal.emoji)
         _goalDetail = State(initialValue: goal.goalDetail)
         _progress = State(initialValue: goal.progress)
+        _dailyTargetString = State(initialValue: String(goal.dailyTarget))
     }
     
     var body: some View {
@@ -280,7 +414,8 @@ struct EditGoalView: View {
                     TextField("Title", text: $title)
                     TextField("Emoji", text: $emoji)
                     TextField("Goal Detail", text: $goalDetail)
-                    Slider(value: $progress, in: 0...1, step: 0.1) // need to improve
+                    TextField("Target Amount", text: $dailyTargetString)
+                        .keyboardType(.decimalPad)
                 }
             }
             .navigationTitle("Edit Goal")
@@ -289,13 +424,16 @@ struct EditGoalView: View {
                     dismiss()
                 },
                 trailing: Button("Save") {
-                    goal.title = title
-                    goal.emoji = emoji
-                    goal.goalDetail = goalDetail
-                    goal.progress = progress
-                    
-                    try? modelContext.save()
-                    dismiss()
+                    if let dailyTarget = Double(dailyTargetString) {
+                        goal.title = title
+                        goal.emoji = emoji
+                        goal.goalDetail = goalDetail
+                        goal.progress = progress
+                        goal.dailyTarget = dailyTarget
+                        
+                        try? modelContext.save()
+                        dismiss()
+                    }
                 }
             )
         }
@@ -303,19 +441,17 @@ struct EditGoalView: View {
 }
 
 struct WelcomeView: View {
-    @State private var showText = false
-    
     var body: some View {
-        ZStack{
+        ZStack {
             Color(.teal.opacity(0.075))
-                .ignoresSafeArea(edges: .all)
+                .ignoresSafeArea()
+            
             VStack {
                 Image("Fit4Life")
                     .resizable()
                     .frame(width: 500, height: 500)
                 NavigationLink {
                     GoalsOverviewView()
-                        .modelContainer(for: Goal.self)
                 } label: {
                     Text("Continue")
                         .customButtonStyle()
@@ -331,4 +467,7 @@ struct WelcomeView: View {
 #Preview {
     WelcomeView()
 } // option + command + return
+
+
+
 
