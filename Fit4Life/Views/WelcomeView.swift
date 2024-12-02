@@ -210,7 +210,7 @@ struct GoalDetailView: View {
                     }
                 )
                 
-                Text("Daily Target: \(goal.dailyTarget, specifier: "%.1f")")
+                Text("Daily Target: \(goal.dailyTarget, specifier: "%.0f") \(goal.goalDetail)")
                     .font(.headline)
                 
                 ProgressCircleView(progress: progressPercentage)
@@ -339,7 +339,7 @@ struct GoalsOverviewView: View {
                                 VStack(alignment: .leading) {
                                     Text("\(goal.title) \(goal.emoji)")
                                         .font(.headline)
-                                    Text(goal.goalDetail)
+                                    Text("\(goal.dailyTarget, specifier: "%.0f") \(goal.goalDetail)")
                                         .font(.subheadline)
                                         .foregroundColor(.gray)
                                 }
@@ -394,48 +394,84 @@ struct EditGoalView: View {
     
     @State private var title: String
     @State private var emoji: String
-    @State private var goalDetail: String
-    @State private var progress: Double
-    @State private var dailyTargetString: String
+    @State private var units: String
+    @State private var quantity: Double
+    
+    let commonEmojis = ["🏃‍♂️", "💪", "🏋️‍♂️", "🚴‍♂️", "🧘‍♂️", "💧", "🥗", "⚡️", "❤️", "🎯"]
     
     init(goal: Goal) {
         self.goal = goal
         _title = State(initialValue: goal.title)
         _emoji = State(initialValue: goal.emoji)
-        _goalDetail = State(initialValue: goal.goalDetail)
-        _progress = State(initialValue: goal.progress)
-        _dailyTargetString = State(initialValue: String(goal.dailyTarget))
+        _units = State(initialValue: goal.goalDetail)
+        _quantity = State(initialValue: goal.dailyTarget)
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Form {
-                Section(header: Text("Goal Details")) {
-                    TextField("Title", text: $title)
-                    TextField("Emoji", text: $emoji)
-                    TextField("Goal Detail", text: $goalDetail)
-                    TextField("Target Amount", text: $dailyTargetString)
-                        .keyboardType(.decimalPad)
+                Section {
+                    VStack(alignment: .leading) {
+                        Text("Goal Title")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                        TextField("e.g., Daily Walking", text: $title)
+                    }
+                    
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text("Quantity")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                            TextField("e.g., 10000", value: $quantity, format: .number)
+                                .keyboardType(.decimalPad)
+                        }
+                        
+                        VStack(alignment: .leading) {
+                            Text("Units")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                            TextField("e.g., steps", text: $units)
+                        }
+                    }
+                } header: {
+                    Text("Goal Information")
+                }
+                
+                Section(header: Text("Choose an Icon")) {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 50))], spacing: 10) {
+                        ForEach(commonEmojis, id: \.self) { emoji in
+                            Text(emoji)
+                                .font(.title)
+                                .padding(5)
+                                .background(self.emoji == emoji ? Color.blue.opacity(0.3) : Color.clear)
+                                .cornerRadius(8)
+                                .onTapGesture {
+                                    self.emoji = emoji
+                                }
+                        }
+                    }
+                    .padding(.vertical, 5)
                 }
             }
             .navigationTitle("Edit Goal")
-            .navigationBarItems(
-                leading: Button("Cancel") {
-                    dismiss()
-                },
-                trailing: Button("Save") {
-                    if let dailyTarget = Double(dailyTargetString) {
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
                         goal.title = title
                         goal.emoji = emoji
-                        goal.goalDetail = goalDetail
-                        goal.progress = progress
-                        goal.dailyTarget = dailyTarget
+                        goal.goalDetail = units
+                        goal.dailyTarget = quantity
                         
                         try? modelContext.save()
                         dismiss()
                     }
+                    .disabled(title.isEmpty || emoji.isEmpty || units.isEmpty)
                 }
-            )
+            }
         }
     }
 }
