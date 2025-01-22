@@ -14,10 +14,10 @@
 		3914B5292CBF7417002F8ECC /* Exceptions for "Fit4Life" folder in "Fit4Life" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Views/CommunityView.swift,
-				Views/GoalDetailView.swift,
-				Views/GoalsOverviewView.swift,
-				Views/LineChartView.swift,
+				Core/Views/CommunityView.swift,
+				Core/Views/GoalDetailView.swift,
+				Core/Views/GoalsOverviewView.swift,
+				Core/Views/LineChartView.swift,
 			);
 			target = 3914B50D2CBF7304002F8ECC /* Fit4Life */;
 		};
@@ -28,10 +28,10 @@
 			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
 			buildPhase = 3914B50C2CBF7304002F8ECC /* Resources */;
 			membershipExceptions = (
-				Views/CommunityView.swift,
-				Views/GoalDetailView.swift,
-				Views/GoalsOverviewView.swift,
-				Views/LineChartView.swift,
+				Core/Views/CommunityView.swift,
+				Core/Views/GoalDetailView.swift,
+				Core/Views/GoalsOverviewView.swift,
+				Core/Views/LineChartView.swift,
 			);
 		};
 /* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */

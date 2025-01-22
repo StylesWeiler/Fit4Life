@@ -487,7 +487,9 @@ struct WelcomeView: View {
                     .resizable()
                     .frame(width: 500, height: 500)
                 NavigationLink {
-                    GoalsOverviewView()
+                    LoginView()
+                        .navigationBarBackButtonHidden(true)
+                    // GoalsOverviewView()
                 } label: {
                     Text("Continue")
                         .customButtonStyle()
