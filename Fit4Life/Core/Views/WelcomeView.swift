@@ -477,6 +477,7 @@ struct EditGoalView: View {
 }
 
 struct WelcomeView: View {
+    @EnvironmentObject var viewModel: AuthViewModel
     var body: some View {
         ZStack {
             Color(.teal.opacity(0.075))
@@ -487,8 +488,14 @@ struct WelcomeView: View {
                     .resizable()
                     .frame(width: 500, height: 500)
                 NavigationLink {
-                    LoginView()
-                        .navigationBarBackButtonHidden(true)
+                    Group {
+                        if viewModel.userSession != nil {
+                            ProfileView()
+                        }
+                        LoginView()
+                            .navigationBarBackButtonHidden(true)
+                    }
+                    
                     // GoalsOverviewView()
                 } label: {
                     Text("Continue")

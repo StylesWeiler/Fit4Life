@@ -6,8 +6,18 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		39CCAE112D40B0A0004D06E3 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 39CCAE102D40B0A0004D06E3 /* FirebaseAuth */; };
+		39CCAE132D40B0A0004D06E3 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 39CCAE122D40B0A0004D06E3 /* FirebaseCore */; };
+		39CCAE152D40B0A0004D06E3 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 39CCAE142D40B0A0004D06E3 /* FirebaseDatabase */; };
+		39CCAE172D40B0A0004D06E3 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 39CCAE162D40B0A0004D06E3 /* FirebaseFirestore */; };
+		39CCAE192D40B0A0004D06E3 /* FirebaseFirestoreCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 39CCAE182D40B0A0004D06E3 /* FirebaseFirestoreCombine-Community */; };
+		39CCAE1B2D40B0A0004D06E3 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 39CCAE1A2D40B0A0004D06E3 /* FirebaseStorage */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		3914B50E2CBF7304002F8ECC /* Fit4Life.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Fit4Life.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		39CCAE052D40AE9B004D06E3 /* Fit4Life.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = Fit4Life.xcodeproj; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -46,6 +56,12 @@
 			path = Fit4Life;
 			sourceTree = "<group>";
 		};
+		39CCAE072D40AE9B004D06E3 /* ViewModels */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			name = ViewModels;
+			path = Fit4Life/ViewModels;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +69,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				39CCAE152D40B0A0004D06E3 /* FirebaseDatabase in Frameworks */,
+				39CCAE172D40B0A0004D06E3 /* FirebaseFirestore in Frameworks */,
+				39CCAE132D40B0A0004D06E3 /* FirebaseCore in Frameworks */,
+				39CCAE192D40B0A0004D06E3 /* FirebaseFirestoreCombine-Community in Frameworks */,
+				39CCAE112D40B0A0004D06E3 /* FirebaseAuth in Frameworks */,
+				39CCAE1B2D40B0A0004D06E3 /* FirebaseStorage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -64,6 +86,8 @@
 			children = (
 				3914B5102CBF7304002F8ECC /* Fit4Life */,
 				3914B50F2CBF7304002F8ECC /* Products */,
+				39CCAE052D40AE9B004D06E3 /* Fit4Life.xcodeproj */,
+				39CCAE072D40AE9B004D06E3 /* ViewModels */,
 			);
 			sourceTree = "<group>";
 		};
@@ -72,6 +96,11 @@
 			children = (
 				3914B50E2CBF7304002F8ECC /* Fit4Life.app */,
 			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		393C79522D41F8C7001E79E3 /* Products */ = {
+			isa = PBXGroup;
 			name = Products;
 			sourceTree = "<group>";
 		};
@@ -92,9 +121,16 @@
 			);
 			fileSystemSynchronizedGroups = (
 				3914B5102CBF7304002F8ECC /* Fit4Life */,
+				39CCAE072D40AE9B004D06E3 /* ViewModels */,
 			);
 			name = Fit4Life;
 			packageProductDependencies = (
+				39CCAE102D40B0A0004D06E3 /* FirebaseAuth */,
+				39CCAE122D40B0A0004D06E3 /* FirebaseCore */,
+				39CCAE142D40B0A0004D06E3 /* FirebaseDatabase */,
+				39CCAE162D40B0A0004D06E3 /* FirebaseFirestore */,
+				39CCAE182D40B0A0004D06E3 /* FirebaseFirestoreCombine-Community */,
+				39CCAE1A2D40B0A0004D06E3 /* FirebaseStorage */,
 			);
 			productName = Fit4Life;
 			productReference = 3914B50E2CBF7304002F8ECC /* Fit4Life.app */;
@@ -124,9 +160,18 @@
 			);
 			mainGroup = 3914B5052CBF7303002F8ECC;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				39CCAE0F2D40B0A0004D06E3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3914B50F2CBF7304002F8ECC /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 393C79522D41F8C7001E79E3 /* Products */;
+					ProjectRef = 39CCAE052D40AE9B004D06E3 /* Fit4Life.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				3914B50D2CBF7304002F8ECC /* Fit4Life */,
@@ -354,6 +399,50 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		39CCAE0F2D40B0A0004D06E3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.7.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		39CCAE102D40B0A0004D06E3 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 39CCAE0F2D40B0A0004D06E3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		39CCAE122D40B0A0004D06E3 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 39CCAE0F2D40B0A0004D06E3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		39CCAE142D40B0A0004D06E3 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 39CCAE0F2D40B0A0004D06E3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		39CCAE162D40B0A0004D06E3 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 39CCAE0F2D40B0A0004D06E3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		39CCAE182D40B0A0004D06E3 /* FirebaseFirestoreCombine-Community */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 39CCAE0F2D40B0A0004D06E3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseFirestoreCombine-Community";
+		};
+		39CCAE1A2D40B0A0004D06E3 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 39CCAE0F2D40B0A0004D06E3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 3914B5062CBF7303002F8ECC /* Project object */;
 }

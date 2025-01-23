@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import Firebase
 
 extension View {
     func commonBackground() -> some View {
@@ -17,11 +18,13 @@ extension View {
 
 @main
 struct Fit4LifeApp: App {
+    @StateObject var viewModel = AuthViewModel()
     let container: ModelContainer
     
     init() {
         do {
             container = try ModelContainer(for: Goal.self)
+            FirebaseApp.configure()
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }
@@ -33,6 +36,7 @@ struct Fit4LifeApp: App {
                 WelcomeView()
             }
             .modelContainer(container)
+            .environmentObject(viewModel)
             .commonBackground()
         }
     }
