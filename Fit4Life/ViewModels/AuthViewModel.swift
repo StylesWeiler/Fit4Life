@@ -9,6 +9,10 @@ import Foundation
 import FirebaseAuth
 import FirebaseFirestore
 
+protocol AuthenticationFormProtocol {
+    var formIsValid: Bool { get }
+}
+
 @MainActor // publish changes to the main thread
 class AuthViewModel: ObservableObject {
     @Published var userSession: FirebaseAuth.User? // firebase user object
@@ -60,7 +64,17 @@ class AuthViewModel: ObservableObject {
     }
     
     func deleteAccount() {
-        
+        func deleteAccount(userId: String) async {
+            do {
+                // Attempt to delete user data from Firestore
+                try await Firestore.firestore().collection("users").document(userId).delete()
+                print("DEBUG: Successfully deleted mock user data from Firestore.")
+                
+            } catch {
+                print("DEBUG: Failed to delete mock user data with error \(error.localizedDescription).")
+            }
+        }
+
     }
     
     func fetchUser() async {

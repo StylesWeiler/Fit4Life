@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ProfileView: View {
     @EnvironmentObject var viewModel: AuthViewModel
+
     var body: some View {
         if let user = viewModel.currentUser {
             List {
@@ -19,10 +20,10 @@ struct ProfileView: View {
                             .fontWeight(.semibold)
                             .foregroundColor(.white)
                             .frame(width: 72, height: 72)
-                            .background(Color(.systemGray3)
-                            .clipShape(Circle()))
+                            .background(Color(.systemGray3))
+                            .clipShape(Circle())
                         
-                        VStack {
+                        VStack(alignment: .leading) {
                             Text(user.fullName)
                                 .fontWeight(.semibold)
                                 .padding(.top, 4)
@@ -33,6 +34,7 @@ struct ProfileView: View {
                         }
                     }
                 }
+                
                 Section("General") {
                     HStack {
                         SettingsRowView(imageName: "gear",
@@ -44,7 +46,6 @@ struct ProfileView: View {
                             .font(.subheadline)
                             .foregroundColor(.gray)
                     }
-                    
                 }
                 
                 Section("Account") {
@@ -55,17 +56,27 @@ struct ProfileView: View {
                                         title: "Sign Out",
                                         tintColor: .red)
                     }
-                    
-                    Button {
-                        print("Delete account...")
+
+                    Button(role: .destructive) {
+                        Task {
+                            do {
+                                try await viewModel.deleteAccount(user.id)
+                                print("DEBUG: Account deleted successfully.")
+                            } catch {
+                                print("DEBUG: Failed to delete account with error \(error.localizedDescription).")
+                            }
+                        }
                     } label: {
                         SettingsRowView(imageName: "xmark.circle.fill",
                                         title: "Delete Account",
                                         tintColor: .red)
                     }
-                    
                 }
             }
+        } else {
+            Text("Loading user information...")
+                .font(.subheadline)
+                .foregroundColor(.gray)
         }
     }
 }

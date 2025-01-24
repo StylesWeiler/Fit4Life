@@ -53,6 +53,8 @@ struct LoginView: View {
                     .frame(width: UIScreen.main.bounds.width - 32, height: 48)
                 }
                 .background(Color(.systemBlue))
+                .disabled(!formIsValid)
+                .opacity(formIsValid ? 1.0 : 0.5) // grey out button if form is not completed properly
                 .cornerRadius(10)
                 .padding(.top, 24)
                 
@@ -72,6 +74,16 @@ struct LoginView: View {
                 }
             }
         }
+    }
+}
+
+// form validation
+extension LoginView: AuthenticationFormProtocol {
+    var formIsValid: Bool {
+        return !email.isEmpty
+        && email.contains("@")
+        && !password.isEmpty
+        && password.count > 5
     }
 }
 
