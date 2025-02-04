@@ -2,7 +2,7 @@
 //  InputView.swift
 //  Fit4Life
 //
-//  Created by Todd Weiler on 1/21/25.
+//  Created by Styles Weiler on 1/21/25.
 //
 
 import SwiftUI
