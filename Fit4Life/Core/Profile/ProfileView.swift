@@ -48,6 +48,7 @@ struct ProfileView: View {
                     }
                 }
                 
+                // SwiftUI error
                 Section("Account") {
                     Button {
                         viewModel.signOut()
