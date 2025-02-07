@@ -8,10 +8,13 @@
 
 import SwiftUI
 
+import SwiftUI
+
 struct NutritionTrackingView: View {
-    @State private var dailyCalories = 1500 // Example calorie count
-    @State private var goalCalories = 2000 // Calorie goal
-    @State private var meals: [String] = ["Breakfast - Oatmeal", "Lunch - Chicken Salad", "Dinner - Grilled Salmon"]
+    @StateObject var viewModel = NutritionViewModel()
+    @State private var dailyCalories = 1250
+    @State private var goalCalories = 2400
+    @State private var showAddMealSheet = false
     
     var body: some View {
         ZStack {
@@ -28,7 +31,7 @@ struct NutritionTrackingView: View {
                     Spacer()
                     
                     Button(action: {
-                        // Add new meal functionality
+                        showAddMealSheet = true
                     }) {
                         Image(systemName: "plus.circle.fill")
                             .resizable()
@@ -43,26 +46,44 @@ struct NutritionTrackingView: View {
                     Text("Daily Calorie Intake")
                         .font(.headline)
                     
-                    ProgressView(value: Double(dailyCalories) / Double(goalCalories))
+                    ProgressView(value: Double(viewModel.totalCalories) / Double(goalCalories))
                         .progressViewStyle(LinearProgressViewStyle(tint: .green))
                         .frame(height: 10)
                     
-                    Text("\(dailyCalories)/\(goalCalories) kcal")
+                    Text("\(viewModel.totalCalories)/\(goalCalories) kcal")
                         .font(.subheadline)
                         .foregroundColor(.gray)
                 }
                 .padding()
                 
-                // Logged meals
-                List(meals, id: \..self) { meal in
-                    Text(meal)
-                        .foregroundColor(.primary)
+                // Logged meals with delete functionality
+                List {
+                    ForEach(viewModel.meals) { meal in
+                        VStack(alignment: .leading) {
+                            Text(meal.name)
+                                .font(.headline)
+                            Text("\(meal.calories) kcal")
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                        }
+                    }
+                    .onDelete(perform: deleteMeal) // Enable swipe-to-delete
                 }
                 .listStyle(InsetGroupedListStyle())
                 
                 Spacer()
             }
             .padding()
+        }
+        .sheet(isPresented: $showAddMealSheet) {
+            AddMealView(viewModel: viewModel) // Show AddMealView for input
+        }
+    }
+    
+    // Delete meal function
+    private func deleteMeal(at offsets: IndexSet) {
+        for index in offsets {
+            viewModel.removeMeal(at: index)
         }
     }
 }
