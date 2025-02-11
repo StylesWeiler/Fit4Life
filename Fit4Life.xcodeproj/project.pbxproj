@@ -28,6 +28,9 @@
 				Core/Views/GoalDetailView.swift,
 				Core/Views/GoalsOverviewView.swift,
 				Core/Views/LineChartView.swift,
+				ViewModels/AuthViewModel.swift,
+				ViewModels/GoalViewModel.swift,
+				ViewModels/NutritionViewModel.swift,
 			);
 			target = 3914B50D2CBF7304002F8ECC /* Fit4Life */;
 		};
@@ -144,7 +147,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1600;
-				LastUpgradeCheck = 1600;
+				LastUpgradeCheck = 1620;
 				TargetAttributes = {
 					3914B50D2CBF7304002F8ECC = {
 						CreatedOnToolsVersion = 16.0;
